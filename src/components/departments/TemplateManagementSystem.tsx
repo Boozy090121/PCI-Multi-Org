@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from '../../context/AuthContext';
 
 // Types for our templates
 interface DepartmentTemplate {
@@ -296,7 +297,7 @@ const sampleRoleTemplates: RoleTemplate[] = [
 
 // Main component
 const TemplateManagementSystem: React.FC = () => {
-  // State for category filter and search term
+  const { currentUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   
@@ -361,32 +362,13 @@ const TemplateManagementSystem: React.FC = () => {
         
         <TabsContent value="departments" className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDepartmentTemplates.map(template => (
-              <Card key={template.id} className="overflow-hidden">
-                <div 
-                  className="h-2" 
-                  style={{ backgroundColor: template.color }}
-                ></div>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle>{template.name}</CardTitle>
-                    {template.popular && (
-                      <Badge variant="secondary">Popular</Badge>
-                    )}
-                  </div>
-                  <CardDescription>{template.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">Roles: {template.roleCount}</span>
-                    <span className="text-gray-500">Category: {template.category}</span>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between pt-2">
-                  <Button variant="outline" size="sm">Preview</Button>
-                  <Button size="sm">Use Template</Button>
-                </CardFooter>
-              </Card>
+            {filteredDepartmentTemplates.map((template) => (
+              <DepartmentTemplateCard 
+                key={template.id} 
+                template={template} 
+                onUse={handleUseDepartmentTemplate} 
+                disabled={!currentUser}
+              />
             ))}
           </div>
           
@@ -399,62 +381,13 @@ const TemplateManagementSystem: React.FC = () => {
         
         <TabsContent value="roles" className="p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {filteredRoleTemplates.map(template => (
-              <Card key={template.id}>
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle>{template.title} {template.level}</CardTitle>
-                      <CardDescription>Department: {template.department}</CardDescription>
-                    </div>
-                    <div className="flex gap-2">
-                      {template.popular && (
-                        <Badge variant="secondary">Popular</Badge>
-                      )}
-                      <Badge variant="outline">{template.category}</Badge>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-medium text-sm text-gray-700 mb-1">Responsibilities:</h4>
-                      <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                        {template.responsibilities.slice(0, 3).map((resp, index) => (
-                          <li key={index}>{resp}</li>
-                        ))}
-                        {template.responsibilities.length > 3 && (
-                          <li className="text-blue-600">+{template.responsibilities.length - 3} more</li>
-                        )}
-                      </ul>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <h4 className="font-medium text-gray-700 mb-1">Required Skills:</h4>
-                        <div className="flex flex-wrap gap-1">
-                          {template.requiredSkills.slice(0, 3).map((skill, index) => (
-                            <Badge key={index} variant="outline" className="bg-gray-50">{skill}</Badge>
-                          ))}
-                          {template.requiredSkills.length > 3 && (
-                            <Badge variant="outline" className="bg-gray-50">+{template.requiredSkills.length - 3}</Badge>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-gray-700 mb-1">Experience:</h4>
-                        <p className="text-gray-600">{template.experience}</p>
-                        <h4 className="font-medium text-gray-700 mb-1 mt-2">Reports To:</h4>
-                        <p className="text-gray-600">{template.reporting.reportsTo}</p>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between pt-2">
-                  <Button variant="outline" size="sm">View Details</Button>
-                  <Button size="sm">Use Template</Button>
-                </CardFooter>
-              </Card>
+            {filteredRoleTemplates.map((template) => (
+              <RoleTemplateCard 
+                key={template.id} 
+                template={template} 
+                onUse={handleUseRoleTemplate} 
+                disabled={!currentUser}
+              />
             ))}
           </div>
           
@@ -477,7 +410,7 @@ const TemplateManagementSystem: React.FC = () => {
               <p className="text-sm text-gray-600">Create a new template from scratch with custom fields and settings.</p>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">Create New</Button>
+              <Button variant="outline" className="w-full" disabled={!currentUser}>Create New</Button>
             </CardFooter>
           </Card>
           
@@ -489,7 +422,7 @@ const TemplateManagementSystem: React.FC = () => {
               <p className="text-sm text-gray-600">Import templates from CSV, Excel, or JSON files.</p>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full">Import</Button>
+              <Button variant="outline" className="w-full" disabled={!currentUser}>Import</Button>
             </CardFooter>
           </Card>
           
@@ -507,6 +440,120 @@ const TemplateManagementSystem: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Department Template Card Component
+interface DepartmentTemplateCardProps {
+  template: DepartmentTemplate;
+  onUse: (template: DepartmentTemplate) => void;
+  disabled: boolean;
+}
+
+const DepartmentTemplateCard: React.FC<DepartmentTemplateCardProps> = ({ template, onUse, disabled }) => {
+  return (
+    <Card className="flex flex-col h-full">
+      <div 
+        className="h-2" 
+        style={{ backgroundColor: template.color }}
+      ></div>
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <CardTitle>{template.name}</CardTitle>
+          {template.popular && (
+            <Badge variant="secondary">Popular</Badge>
+          )}
+        </div>
+        <CardDescription>{template.description}</CardDescription>
+      </CardHeader>
+      <CardContent className="pb-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Roles: {template.roleCount}</span>
+          <span className="text-gray-500">Category: {template.category}</span>
+        </div>
+      </CardContent>
+      <CardFooter className="mt-auto">
+        <Button 
+          className="w-full" 
+          onClick={() => onUse(template)} 
+          disabled={disabled}
+        >
+          Use Template
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+// Role Template Card Component
+interface RoleTemplateCardProps {
+  template: RoleTemplate;
+  onUse: (template: RoleTemplate) => void;
+  disabled: boolean;
+}
+
+const RoleTemplateCard: React.FC<RoleTemplateCardProps> = ({ template, onUse, disabled }) => {
+  return (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <div>
+            <CardTitle>{template.title} {template.level}</CardTitle>
+            <CardDescription>Department: {template.department}</CardDescription>
+          </div>
+          <div className="flex gap-2">
+            {template.popular && (
+              <Badge variant="secondary">Popular</Badge>
+            )}
+            <Badge variant="outline">{template.category}</Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-medium text-sm text-gray-700 mb-1">Responsibilities:</h4>
+            <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+              {template.responsibilities.slice(0, 3).map((resp, index) => (
+                <li key={index}>{resp}</li>
+              ))}
+              {template.responsibilities.length > 3 && (
+                <li className="text-blue-600">+{template.responsibilities.length - 3} more</li>
+              )}
+            </ul>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <h4 className="font-medium text-gray-700 mb-1">Required Skills:</h4>
+              <div className="flex flex-wrap gap-1">
+                {template.requiredSkills.slice(0, 3).map((skill, index) => (
+                  <Badge key={index} variant="outline" className="bg-gray-50">{skill}</Badge>
+                ))}
+                {template.requiredSkills.length > 3 && (
+                  <Badge variant="outline" className="bg-gray-50">+{template.requiredSkills.length - 3}</Badge>
+                )}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-700 mb-1">Experience:</h4>
+              <p className="text-gray-600">{template.experience}</p>
+              <h4 className="font-medium text-gray-700 mb-1 mt-2">Reports To:</h4>
+              <p className="text-gray-600">{template.reporting.reportsTo}</p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter className="mt-auto pt-4">
+        <Button 
+          className="w-full" 
+          onClick={() => onUse(template)} 
+          disabled={disabled}
+        >
+          Use Template
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
