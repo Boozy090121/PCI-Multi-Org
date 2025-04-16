@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Construction } from 'lucide-react'; // Placeholder icon
+// import { Construction } from 'lucide-react'; // No longer needed
+import OrgChart from '@/components/orgchart/OrgChart'; // Import the actual chart component
 
 // Simple placeholder component
 const OrgChartDisplay: React.FC = () => {
@@ -10,14 +11,9 @@ const OrgChartDisplay: React.FC = () => {
         <CardTitle>Organizational Chart</CardTitle>
         <CardDescription>Visualize the organizational structure.</CardDescription>
       </CardHeader>
-      <CardContent className="h-[60vh] flex flex-col items-center justify-center text-center">
-        <Construction className="w-16 h-16 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">
-            Organizational Chart visualization is under construction.
-        </p>
-         <p className="text-sm text-muted-foreground mt-2">
-            (Dependencies causing build issues - will revisit later)
-         </p>
+      <CardContent className="p-0" style={{ height: 'calc(100vh - 200px)' }}> {/* Adjust height as needed, remove padding */}
+         {/* Render the actual OrgChart component */}
+         <OrgChart />
       </CardContent>
     </Card>
   );

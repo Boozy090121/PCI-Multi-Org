@@ -8,6 +8,19 @@ A comprehensive web application for managing organizational structure, roles, re
 - **Cross-Departmental Alignment**: Visualize responsibilities across departments with RACI matrices
 - **Headcount Calculation**: Calculate optimal staffing based on workload metrics
 - **Organizational Chart**: Interactive visualization of your organization's structure
+  - **Dynamic Hierarchy Visualization**
+    - Drag-and-drop interface for restructuring
+    - Multiple view options (vertical, horizontal, radial)
+    - Expand/collapse functionality for departments
+    - Role detail pop-ups on hover/click
+    - Search functionality to locate specific roles
+  - **Hierarchy Management**
+    - Visual indication of reporting relationships
+    - Span of control analysis
+    - Management layers optimization
+    - Dotted-line relationship indicators
+  - **Export & Share Functions**
+    - High-resolution PNG/PDF export
 - **Gap Analysis**: Identify and track organizational gaps
 - **Template Management**: Pre-populated department and role templates
 - **Collaboration Tools**: Share and collaborate with team members

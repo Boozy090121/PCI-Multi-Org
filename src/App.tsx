@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import TemplateManagementSystem from './components/departments/TemplateManagementSystem';
 import DepartmentManagement from './features/departments/DepartmentManagement';
 import RoleManagement from './features/roles/RoleManagement';
 import MatrixManagement from './features/matrices/MatrixManagement';
@@ -60,18 +59,11 @@ const App: React.FC = () => {
       </header>
       
       <Tabs defaultValue="dashboard" className="w-full">
-        <TabsList className="mb-6 grid w-full grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-11">
+        <TabsList className="mb-6 grid w-full grid-cols-4">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="departments">Departments</TabsTrigger>
-          <TabsTrigger value="roles">Roles</TabsTrigger>
-          <TabsTrigger value="processes">Processes</TabsTrigger>
-          <TabsTrigger value="matrices">Matrices</TabsTrigger>
-          <TabsTrigger value="headcount">Headcount</TabsTrigger>
-          <TabsTrigger value="orgchart">Org Chart</TabsTrigger>
-          <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
-          <TabsTrigger value="std-responsibilities">Std Responsibilities</TabsTrigger>
-          <TabsTrigger value="std-skills">Std Skills</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="organization">Organization</TabsTrigger>
+          <TabsTrigger value="analysis">Analysis & Tools</TabsTrigger>
+          <TabsTrigger value="configuration">Configuration</TabsTrigger>
         </TabsList>
         
         {authLoading ? (
@@ -96,8 +88,6 @@ const App: React.FC = () => {
                    <div className="flex flex-col space-y-2">
                      <Button variant="outline">Add New Department</Button>
                      <Button variant="outline">Create New Role</Button>
-                     <Button variant="outline">Update Headcount</Button>
-                     <Button variant="outline">Export Organization Chart</Button>
                    </div>
                 </div>
               </div>
@@ -113,45 +103,44 @@ const App: React.FC = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="headcount">
-              <SimpleHeadcountCalculator />
+            <TabsContent value="organization">
+                <Tabs defaultValue="departments" className="w-full">
+                   <TabsList className="mb-4 grid w-full grid-cols-4">
+                      <TabsTrigger value="departments">Departments</TabsTrigger>
+                      <TabsTrigger value="roles">Roles</TabsTrigger>
+                      <TabsTrigger value="processes">Processes</TabsTrigger>
+                      <TabsTrigger value="orgchart">Org Chart</TabsTrigger>
+                   </TabsList>
+                   <TabsContent value="departments"><DepartmentManagement /></TabsContent>
+                   <TabsContent value="roles"><RoleManagement /></TabsContent>
+                   <TabsContent value="processes"><ProcessManagement /></TabsContent>
+                   <TabsContent value="orgchart"><OrgChartDisplay /></TabsContent>
+                </Tabs>
             </TabsContent>
-            
-            <TabsContent value="templates">
-              <TemplateManagementSystem />
+
+            <TabsContent value="analysis">
+                 <Tabs defaultValue="matrices" className="w-full">
+                    <TabsList className="mb-4 grid w-full grid-cols-3">
+                       <TabsTrigger value="matrices">Matrices</TabsTrigger>
+                       <TabsTrigger value="headcount">Headcount</TabsTrigger>
+                       <TabsTrigger value="gap-analysis">Gap Analysis</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="matrices"><MatrixManagement /></TabsContent>
+                    <TabsContent value="headcount"><SimpleHeadcountCalculator /></TabsContent>
+                    <TabsContent value="gap-analysis"><GapAnalysisOverview /></TabsContent>
+                 </Tabs>
             </TabsContent>
-            
-            <TabsContent value="departments">
-              <DepartmentManagement />
-            </TabsContent>
-            
-            <TabsContent value="roles">
-              <RoleManagement />
-            </TabsContent>
-            
-            <TabsContent value="processes">
-              <ProcessManagement />
-            </TabsContent>
-            
-            <TabsContent value="matrices">
-              <MatrixManagement />
-            </TabsContent>
-            
-            <TabsContent value="orgchart">
-              <OrgChartDisplay />
-            </TabsContent>
-            
-            <TabsContent value="gap-analysis">
-              <GapAnalysisOverview />
-            </TabsContent>
-            
-            <TabsContent value="std-responsibilities">
-              <StandardResponsibilityManagement />
-            </TabsContent>
-            
-            <TabsContent value="std-skills">
-              <StandardSkillManagement />
-            </TabsContent>
+
+            <TabsContent value="configuration">
+                  <Tabs defaultValue="std-skills" className="w-full">
+                     <TabsList className="mb-4 grid w-full grid-cols-2">
+                        <TabsTrigger value="std-skills">Std Skills</TabsTrigger>
+                        <TabsTrigger value="std-responsibilities">Std Responsibilities</TabsTrigger>
+                     </TabsList>
+                     <TabsContent value="std-skills"><StandardSkillManagement /></TabsContent>
+                     <TabsContent value="std-responsibilities"><StandardResponsibilityManagement /></TabsContent>
+                  </Tabs>
+             </TabsContent>
           </>
         )}
       </Tabs>
